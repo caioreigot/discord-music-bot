@@ -143,6 +143,8 @@ function clearServerValues() {
         connection = null;
         dispatcher = null;
         currentVideoUrl = null;
+        queue = [];
+        queuePosition = 0;
     }
 }
 

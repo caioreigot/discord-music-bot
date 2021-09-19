@@ -2,6 +2,8 @@
  * TODO: Linha 21 e 30
 */
 
+const QueueObject = require("../model/QueueObject");
+const convertToMinutes = require("./convertToMinutes");
 const config = require("../config.json");
 
 function Player(ytdl, server) {
@@ -10,22 +12,24 @@ function Player(ytdl, server) {
 };
 
 Player.prototype.playRequest = function(url, channel) {
-    this.server.queue.push(url);
+    // Pegando as informações do vídeo para mostrar o título no chat
+    this.ytdl.getInfo(url).then(info => {
+        const videoTitle = info.videoDetails.title;
+        const videoDurationInMinutes = convertToMinutes(info.videoDetails.lengthSeconds);
+
+        this.server.queue.push(
+            new QueueObject(
+                url, `${videoTitle} [${videoDurationInMinutes}]`
+            )
+        );
+
+        let status = (url == this.server.currentVideoUrl) ? "Tocando" : "Adicionado à fila"
+        channel.send(`${status}: **${videoTitle}** [${videoDurationInMinutes}]`);
+    });
 
     if (this.server.dispatcher == null) {        
         this.playCurrentAudio(url);
     }
-
-    // Pegando as informações do vídeo para mostrar o título no chat
-    this.ytdl.getInfo(url).then(info => {
-        let status = (url == this.server.currentVideoUrl) ? "Tocando" : "Adicionado à fila"
-        channel.send(`${status}: **${info.videoDetails.title}**`);
-
-        /*
-         * TODO: Adicionar no array server.queue objetos com 2 valores, um pro link e
-         * outro pro título + duração do vídeo (para aparecer no !queue) 
-        */
-    });
 };
 
 Player.prototype.playCurrentAudio = function(url) {
