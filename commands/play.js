@@ -1,16 +1,18 @@
-const servidores = require("../index.js").servidores;
+const servers = require("../index.js").servers;
 const assignConnection = require("../index.js").assignConnection;
 const ytdl = require("ytdl-core");
 
 const getYoutubeVideoUrl = require("../functionalities/getYoutubeVideoUrl");
 const playAudio = require("../functionalities/playAudio");
-const player = new playAudio(ytdl, servidores.server);
 
 module.exports = async function(msg) {
-    if (servidores.server.connection == null) {
+    // Se o usuário deu o comando !p sem o bot estar conectado no canal de voz
+    if (servers[msg.guild.id] == null) {
+        // Conectar no canal de voz
         await assignConnection(msg);
     }
-    
+
+    const player = new playAudio(ytdl, servers[msg.guild.id]);
     let input = msg.content.slice(3);
     
     // Verificar se é uma URL

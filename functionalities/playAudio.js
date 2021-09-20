@@ -1,6 +1,7 @@
 const QueueObject = require("../model/QueueObject");
 const convertToMinutes = require("./convertToMinutes");
 const config = require("../config.json");
+const hasNextAudio = require("../index.js").hasNextAudio;
 
 function Player(ytdl, server) {
     this.ytdl = ytdl;
@@ -15,6 +16,7 @@ Player.prototype.playRequest = function(url, channel) {
         const audioDuration = convertToMinutes(info.videoDetails.lengthSeconds);
         
         this.server.queue.push(new QueueObject(url, videoTitle, audioDuration));
+        this.server.hasNextAudio = hasNextAudio(this.server);
         this.playAudio(channel, url, videoTitle, audioDuration, true);
     });
 }
@@ -33,13 +35,10 @@ Player.prototype.playAudio = function(channel, url, videoTitle, audioDuration, i
                     // Download completo
             })*/
         ).on("finish", () => { // Audio atual terminou
-            let queuePosition = this.server.queuePosition;
-            let queueLength = this.server.queue.length;
-
             this.server.dispatcher = null;
         
             // Se houver ainda áudios para reproduzir na queue
-            this.server.hasNextAudio = queuePosition + 1 < queueLength;
+            this.server.hasNextAudio = hasNextAudio(this.server);
 
             if (this.server.hasNextAudio) {
                 this.server.queuePosition++;

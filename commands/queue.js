@@ -1,14 +1,14 @@
 const Discord = require("discord.js");
-const servidores = require("../index.js").servidores;
+const servers = require("../index.js").servers;
 
 module.exports = function(msg) {
-    let queue = servidores.server.queue;
+    let queue = servers[msg.guild.id].queue;
     let lista = "";
 
     // Se houver áudios na queue
-    if (servidores.server.queue.length >= 1) {
-        lista = `**Atualmente tocando:** ${servidores.server.queue[servidores.server.queuePosition].title}\n`
-        + `**Loop** ***${(servidores.server.loopEnabled ? "ligado." : "desligado.")}***` + "\n\n"
+    if (servers[msg.guild.id].queue.length >= 1) {
+        lista = `**Atualmente tocando:** ${servers[msg.guild.id].queue[servers[msg.guild.id].queuePosition].title}\n`
+        + `**Loop** ***${(servers[msg.guild.id].loopEnabled ? "ligado." : "desligado.")}***` + "\n\n"
     }
 
     if (queue.length == 0) {

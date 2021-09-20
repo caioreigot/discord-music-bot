@@ -13,7 +13,7 @@ module.exports = function(msg) {
             + "**!loop**\n```Ao terminar de reproduzir o último áudio da fila, o Bot irá voltar para o primeiro```\n"
             + "**!pause**\n```Pausa o áudio.```\n"
             + "**!resume**\n```Despausa o áudio.```\n"
-            + "**!join**\n```Força o Bot a entrar no canal que o membro está.```\n"
+            + "**!join**\n```Faz o Bot entrar no canal que o membro está.```\n"
             + "**!leave**\n```Faz o Bot sair do canal de voz que está.```\n"
         )
 

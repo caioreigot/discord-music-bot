@@ -1,9 +1,9 @@
-const servidores = require("../index.js").servidores;
+const servers = require("../index.js").servers;
 
 module.exports = function(msg) {
     // Se houver próximo áudio na queue
-    if (servidores.server.queuePosition + 1 < servidores.server.queue.length) {
-        servidores.server.dispatcher.end();
+    if (servers[msg.guild.id].queuePosition + 1 < servers[msg.guild.id].queue.length) {
+        servers[msg.guild.id].dispatcher.end();
         msg.channel.send("Áudio atual pulado.");
     } else {
         msg.channel.send("Não existe um próximo áudio na fila para ser reproduzido!");
