@@ -34,6 +34,7 @@ module.exports = async (input, channel, callback) => {
     });
 }
 
+// Library (pesquisa no Youtube sem a API da Google)
 async function alternativeSearch(input, channel, callback) {
     try {
         const videos = await yt.search(input);
