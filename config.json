@@ -1,8 +1,0 @@
-{
-    "TOKEN_DISCORD": "ODg4NTkwODU3MzA4MTEwODQ4.YUU6uQ.w1Nxk7AqBg40FZ_OZmwvdDAzelg",
-    "GOOGLE_KEY": "AIzaSyAWBFZPGLmkBFiE8qCnCLHT54unwP9iPi0",
-    "PREFIX": "!",
-    "YTDL": {
-        "filter": "audioonly"
-    }
-}
