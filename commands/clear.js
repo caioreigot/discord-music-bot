@@ -12,5 +12,5 @@ module.exports = function(msg) {
     server.queuePosition = 0;
     server.hasNextAudio = hasNextAudio(server);
 
-    msg.channel.send("Fila limpa!");
+    msg.channel.send("Fila limpa.");
 }

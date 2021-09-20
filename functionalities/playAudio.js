@@ -49,7 +49,8 @@ Player.prototype.playAudio = function(channel, url, videoTitle, audioDuration, i
                     this.server.queue[this.server.queuePosition].duration
                 );
             } else { // Se não houver próximo áudio na queue
-                if (this.server.loopEnabled) { // Se a opção de loop estiver ativa
+                // Se a opção de loop estiver ativa e houver músicas para tocar
+                if (this.server.loopEnabled && this.server.queue.length > 0) { 
                     this.server.queuePosition = 0;
                     this.playAudio(
                         channel,

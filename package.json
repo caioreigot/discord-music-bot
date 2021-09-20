@@ -13,7 +13,7 @@
     "discord.js": "^12.5.1",
     "ffmpeg-static": "^4.3.0",
     "googleapis": "^87.0.0",
-    "youtube-search-without-api-key": "^1.0.6",
+    "youtube-search-api": "^1.0.10",
     "ytdl-core": "^4.9.1"
   }
 }
