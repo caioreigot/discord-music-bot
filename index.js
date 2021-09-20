@@ -52,17 +52,6 @@ client.on("message", async (msg) => {
         return;
     }
 
-    /* !d (debug) */
-    else if (msg.content === prefixo + "d") {
-        console.log("has dispatcher: " + servers[msg.guild.id].dispatcher == null);
-        console.log("queue: " + JSON.stringify(servers[msg.guild.id].queue));
-        console.log("queuePosition: " + servers[msg.guild.id].queuePosition);
-        console.log("hasNextAudio: " + servers[msg.guild.id].hasNextAudio);
-        console.log("loopEnabled: " + servers[msg.guild.id].loopEnabled);
-        console.log("========================================================");
-        return;
-    }
-
     /* !p <url/nome> */
     else if (msg.content.startsWith(prefixo + "p ")) {
         play(msg);
