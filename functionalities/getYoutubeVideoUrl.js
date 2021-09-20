@@ -20,7 +20,7 @@ module.exports = async (input, channel, callback) => {
         type: "video"
     }, function (err, resultado) {
         if (err) {
-            alternativeSearch(input, channel);
+            alternativeSearch(input, channel, callback);
             return;
         }
     
@@ -34,10 +34,9 @@ module.exports = async (input, channel, callback) => {
     });
 }
 
-function alternativeSearch(input, channel) {
+async function alternativeSearch(input, channel, callback) {
     try {
         const videos = await yt.search(input);
-        console.log(videos);
         // Pegando o primeiro objeto do Array (primeiro resultado da pesquisa no Youtube)
         let videoId = videos[0].id.videoId;
         let link = `https://www.youtube.com/watch?v=${videoId}`;
