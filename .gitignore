@@ -1,5 +1,3 @@
-config.json
-
 # Logs
 logs
 *.log
@@ -57,7 +55,10 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+#.env
+
+# config file
+#config.json
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

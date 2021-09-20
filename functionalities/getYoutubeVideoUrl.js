@@ -1,10 +1,10 @@
-const config = require("../config.json");
+require("dotenv/config");
 const google = require("googleapis");
 const ytSearch = require("youtube-search-api");
 
 const youtube = new google.youtube_v3.Youtube({
     version: "v3",
-    auth: config.GOOGLE_KEY
+    auth: process.env.GOOGLE_KEY
 });
 
 module.exports = async (input, channel, callback) => {

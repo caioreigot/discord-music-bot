@@ -1,9 +1,9 @@
-const config = require("./config.json");
+require("dotenv/config");
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const fs = require("fs");
 
-const prefixo = config.PREFIX;
+const prefixo = "!";
 
 const servers = [];
 
@@ -115,7 +115,7 @@ const run = () => {
         msg.channel.send("Comando inválido, escreva **!help** para ver os comandos disponíveis.");
     });
     
-    client.login(config.TOKEN_DISCORD);
+    client.login(process.env.TOKEN_DISCORD);
 }
 
 const loadServers = () => {
