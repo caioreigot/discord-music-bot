@@ -18,11 +18,17 @@ module.exports = (input, channel, callback) => {
         type: "video"
     }, function (err, resultado) {
         if (err) {
-            channel.send(
-                "Um erro foi encontrado ao tentar tocar a música...\n" +
-                "```"+err.message+"```"
-            )
-            
+            if (err.message == 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.') {
+                channel.send(
+                    "Ops! Infelizmente o Bot tem um limite de pesquisas no Youtube por dia, por favor, use o link para tocar o áudio ao invés de usar um nome.\n``!p <link>``"
+                )
+            } else {
+                channel.send(
+                    "Um erro foi encontrado ao tentar tocar a música...\n" +
+                    "```"+err.message+"```"
+                )
+            }
+
             return null;
         }
     

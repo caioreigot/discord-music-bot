@@ -1,7 +1,6 @@
 const config = require("./config.json");
 const Discord = require("discord.js");
 const client = new Discord.Client();
-const ytdl = require("ytdl-core");
 
 const prefixo = config.PREFIX;
 
@@ -11,14 +10,30 @@ const servidores = {
         dispatcher: null,
         currentVideoUrl: null,
         queue: [],
-        queuePosition: 0
+        queuePosition: 0,
+        hasNextAudio: false,
+        loopEnabled: false
     }
-};
+}
 
-/* Functionalities */
-const getYoutubeVideoUrl = require("./functionalities/getYoutubeVideoUrl");
-const playAudio = require("./functionalities/playAudio");
-const player = new playAudio(ytdl, servidores.server);
+module.exports = {
+    servidores, 
+    clearServerValues,
+    assignConnection
+}
+
+/* Commands */
+const play = require("./commands/play");
+const join = require("./commands/join");
+const leave = require("./commands/leave");
+const pause = require("./commands/pause");
+const resume = require("./commands/resume");
+const queue = require("./commands/queue");
+const clear = require("./commands/clear");
+const remove = require("./commands/remove");
+const next = require("./commands/next");
+const loop = require("./commands/loop");
+const help = require("./commands/help");
 
 client.on("ready", () => {
     console.log("O bot está online.");
@@ -38,69 +53,67 @@ client.on("message", async (msg) => {
 
     /* !p <url/nome> */
     else if (msg.content.startsWith(prefixo + "p ")) {
-        if (servidores.server.connection == null) {
-            await assignConnection(msg);
-        }
-
-        let input = msg.content.slice(3);
-        
-        // Verificar se é uma URL
-        if (ytdl.validateURL(input)) {
-            player.playRequest(input, msg.channel);
-        } else {
-            // O input não é uma URL, então procurar no Youtube pelo nome
-            getYoutubeVideoUrl(input, msg.channel, (url) => {
-                player.playRequest(url, msg.channel);
-            });
-        }
-
+        play(msg);
         return;
     }
 
     /* !join */
     else if (msg.content === prefixo + "join") {
-        assignConnection(msg);
+        join(msg);
         return;
     }
 
     /* !leave */
     else if (msg.content === prefixo + "leave") {
-        msg.member.voice.channel.leave();
-        clearServerValues();
-        return;
-    }
-
-    /* !help */
-    else if (msg.content === prefixo + "help") {
-        let embed = new Discord.MessageEmbed()
-            .setColor([0, 191, 255])
-            .setTitle("Comandos")
-            .setDescription(
-                "**!p <nome/link>**\n```Procura e toca a música no Youtube. Você pode usar o link ou o nome do vídeo (ao pesquisar por nome, será tocado o primeiro resultado fornecido pelo Youtube).```\n"
-                + "**!queue**\n```Mostra a ordem que as músicas serão tocadas.```\n"
-                + "**!clear**\n```Limpa a queue de músicas.```\n"
-                + "**!next**\n```Pula para a próxima música na queue.```\n"
-                + "**!pause**\n```Pausa o som.```\n"
-                + "**!resume**\n```Despausa o som.```\n"
-                + "**!join**\n```Força o Bot a entrar no canal que o membro está.```\n"
-                + "**!leave**\n```Faz o Bot sair do canal de voz que está.```\n"
-            )
-
-        msg.channel.send(embed);
+        leave(msg);
         return;
     }
 
     /* !pause */
     else if (msg.content === prefixo + "pause") { 
-        servidores.server.dispatcher.pause();
-        msg.channel.send("Música pausada! Escreva **!resume** para despausar.");
+        pause(msg);
         return;
     }
 
     /* !resume */
     else if (msg.content === prefixo + "resume") { 
-        resumePlayer();
-        msg.channel.send("Música despausada.");
+        resume(msg);
+        return;
+    }
+
+    /* !queue */
+    else if (msg.content === prefixo + "queue") {
+        queue(msg);
+        return;
+    }
+
+    /* !clear */
+    else if (msg.content === prefixo + "clear") {
+        clear(msg);
+        return;
+    }
+
+    /* !r <numero> */
+    else if (msg.content.startsWith(prefixo + "r ")) {
+        remove(msg);
+        return;
+    }
+
+    /* !next */
+    else if (msg.content === prefixo + "next") {
+        next(msg);
+        return;
+    }
+
+    /* !loop */
+    else if (msg.content === prefixo + "loop") {
+        loop(msg);
+        return;
+    }
+
+    /* !help */
+    else if (msg.content === prefixo + "help") {
+        help(msg);
         return;
     }
     
@@ -108,8 +121,20 @@ client.on("message", async (msg) => {
      * Caso o código chegue nessa parte, ele não sofreu nenhum return, 
      * portanto, o comando não foi reconhecido
     */
-    msg.channel.send("Comando não válido, escreva **!help** para ver os comandos disponíveis.");
+    msg.channel.send("Comando inválido, escreva **!help** para ver os comandos disponíveis.");
 });
+
+function clearServerValues() {
+    with (servidores.server) {
+        connection = null;
+        dispatcher = null;
+        currentVideoUrl = null;
+        queue = [];
+        queuePosition = 0;
+        hasNextAudio = false;
+        loopEnabled = false;
+    }
+}
 
 async function assignConnection(msg) {
     try {
@@ -122,29 +147,8 @@ async function assignConnection(msg) {
     } catch (err) {
         msg.channel.send(
             "Um erro foi encontrado ao tentar se juntar ao canal...\n" +
-            "```"+err.message+"```"
+            "Log: ```"+err.message+"```"
         )
-    }
-}
-
-function resumePlayer() {
-    /* 
-     * Devido a um bug na versão atual do Node.js, 
-     * é preciso resumir, pausar e resumir novamente o player
-     * para que o método "resume" funcione devidamente
-    */
-    servidores.server.dispatcher.resume();
-    servidores.server.dispatcher.pause();
-    servidores.server.dispatcher.resume();
-}
-
-function clearServerValues() {
-    with (servidores.server) {
-        connection = null;
-        dispatcher = null;
-        currentVideoUrl = null;
-        queue = [];
-        queuePosition = 0;
     }
 }
 

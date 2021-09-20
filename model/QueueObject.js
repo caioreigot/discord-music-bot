@@ -1,7 +1,8 @@
 class QueueObject {
-    constructor(url, information) {
+    constructor(url, title, duration) {
         this.url = url;
-        this.information = information;
+        this.title = title;
+        this.duration = duration;
     }
 }
 
