@@ -1,7 +1,6 @@
 const servers = require("../index.js").servers;
 
 module.exports = function(msg) {
-    resumePlayer(msg);
     msg.channel.send("Música despausada.");
 
     /* 
