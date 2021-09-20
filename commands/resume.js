@@ -12,6 +12,7 @@ module.exports = function(msg) {
         servers[msg.guild.id].dispatcher.resume();
         servers[msg.guild.id].dispatcher.pause();
         servers[msg.guild.id].dispatcher.resume();
+        server.paused = false;
         msg.channel.send("Música despausada.");
     } else {
         msg.channel.send("O áudio já está sendo reproduzido!");

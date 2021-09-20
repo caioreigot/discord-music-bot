@@ -5,8 +5,8 @@ module.exports = function(msg) {
 
     if (!server.paused) {
         server.dispatcher.pause();
-        msg.channel.send("Áudio pausado! Escreva **!resume** para despausar.");
         server.paused = true;
+        msg.channel.send("Áudio pausado! Escreva **!resume** para despausar.");
     } else {
         msg.channel.send("O áudio já está pausado!");
     }
