@@ -1,8 +1,10 @@
 const servers = require("../index.js").servers;
 
 module.exports = function(msg) {
-    servers[msg.guild.id].loopEnabled = !servers[msg.guild.id].loopEnabled;
+    let server = servers[msg.guild.id];
 
-    let status = servers[msg.guild.id].loopEnabled ? "ligado" : "desligado";
+    server.loopEnabled = !server.loopEnabled;
+
+    let status = server.loopEnabled ? "ligado" : "desligado";
     msg.channel.send(`Loop ${status}.`);    
 }

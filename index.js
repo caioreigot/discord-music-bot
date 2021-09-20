@@ -47,6 +47,18 @@ const run = () => {
             join(msg);
             return;
         }
+
+        /* !help */
+        else if (msg.content === prefixo + "help") {
+            help(msg);
+            return;
+        }
+
+        // Se o bot não estiver conectado em um servidor
+        if (servers[msg.guild.id] == null) {
+            msg.channel.send("Você precisa estar conectado em um canal de voz!");
+            return;
+        }
     
         /* !leave */
         else if (msg.content === prefixo + "leave") {
@@ -93,12 +105,6 @@ const run = () => {
         /* !loop */
         else if (msg.content === prefixo + "loop") {
             loop(msg);
-            return;
-        }
-    
-        /* !help */
-        else if (msg.content === prefixo + "help") {
-            help(msg);
             return;
         }
         
@@ -158,7 +164,9 @@ const saveServer = (id) => {
 }
 
 const clearServerValues = (msg) => {
-    with (servers[msg.guild.id]) {
+    server = servers[msg.guild.id];
+
+    with (server) {
         connection = null;
         dispatcher = null;
         currentVideoUrl = null;
