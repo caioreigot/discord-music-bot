@@ -1,3 +1,4 @@
+require("dotenv/config");
 const config = require("./config.json");
 const Discord = require("discord.js");
 const client = new Discord.Client();
@@ -35,13 +36,13 @@ const run = () => {
             msg.channel.send("Você precisa estar em um canal de voz.");
             return;
         }
-    
+
         /* !p <url/nome> */
         else if (msg.content.startsWith(prefixo + "p ")) {
             play(msg);
             return;
         }
-    
+
         /* !join */
         else if (msg.content === prefixo + "join") {
             join(msg);
@@ -59,55 +60,55 @@ const run = () => {
             msg.channel.send("Você precisa estar conectado em um canal de voz!");
             return;
         }
-    
+
         /* !leave */
         else if (msg.content === prefixo + "leave") {
             leave(msg);
             return;
         }
-    
+
         /* !pause */
         else if (msg.content === prefixo + "pause") { 
             pause(msg);
             return;
         }
-    
+
         /* !resume */
         else if (msg.content === prefixo + "resume") { 
             resume(msg);
             return;
         }
-    
+
         /* !queue */
         else if (msg.content === prefixo + "queue") {
             queue(msg);
             return;
         }
-    
+
         /* !clear */
         else if (msg.content === prefixo + "clear") {
             clear(msg);
             return;
         }
-    
+
         /* !r <numero> */
         else if (msg.content.startsWith(prefixo + "r ")) {
             remove(msg);
             return;
         }
-    
+
         /* !next */
         else if (msg.content === prefixo + "next") {
             next(msg);
             return;
         }
-    
+
         /* !loop */
         else if (msg.content === prefixo + "loop") {
             loop(msg);
             return;
         }
-        
+
         /*
          * Caso o código chegue nessa parte, ele não sofreu nenhum return, 
          * portanto, o comando não foi reconhecido
@@ -127,7 +128,7 @@ const loadServers = () => {
 
         const objData = JSON.parse(data);
         for (let i in objData.servers) {
-            servers[i] = {
+            servers[objData.servers[i]] = {
                 connection: null,
                 dispatcher: null,
                 currentVideoUrl: null,
@@ -163,8 +164,8 @@ const saveServer = (id) => {
     });
 }
 
-const clearServerValues = (msg) => {
-    server = servers[msg.guild.id];
+const clearServerValues = (serverId) => {
+    server = servers[serverId];
 
     with (server) {
         connection = null;
@@ -178,34 +179,18 @@ const clearServerValues = (msg) => {
 }
 
 const assignConnection = async (msg) => {
-    initializeServerObj(msg.guild.id);
-    saveServer(msg.guild.id);
-
     try {
         servers[msg.guild.id].connection = await msg.member.voice.channel.join();
     
         // Se o bot desconectar, por qualquer motivo, esta função será chamada
         servers[msg.guild.id].connection.on("disconnect", () => {
-            clearServerValues(msg);
+            clearServerValues(msg.guild.id);
         })
     } catch (err) {
         msg.channel.send(
             "Um erro foi encontrado ao tentar se juntar ao canal...\n" +
             "```Log: "+err.message+"```"
         )
-    }
-}
-
-const initializeServerObj = (id) => {
-    servers[id] = {
-        connection: null,
-        dispatcher: null,
-        currentVideoUrl: null,
-        queue: [],
-        queuePosition: 0,
-        hasNextAudio: false,
-        paused: false,
-        loopEnabled: false
     }
 }
 
