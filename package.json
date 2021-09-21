@@ -17,5 +17,6 @@
     "googleapis": "^87.0.0",
     "youtube-search-api": "^1.0.10",
     "ytdl-core": "^4.9.1"
-  }
+  },
+  "devDependencies": {}
 }

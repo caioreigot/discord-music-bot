@@ -173,6 +173,7 @@ const clearServerValues = (serverId) => {
         queue = [];
         queuePosition = 0;
         hasNextAudio = false;
+        paused = false;
         loopEnabled = false;
     }
 }
