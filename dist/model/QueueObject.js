@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 class QueueObject {
     constructor(url, title, duration) {
         this.url = url;
@@ -5,5 +7,4 @@ class QueueObject {
         this.duration = duration;
     }
 }
-
-module.exports = QueueObject;
+exports.default = QueueObject;

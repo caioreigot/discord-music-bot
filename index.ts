@@ -1,20 +1,30 @@
-require("dotenv/config");
-const config = require("./config.json");
-const Discord = require("discord.js");
-const client = new Discord.Client();
-const fs = require("fs");
+import * as dotenv from 'dotenv';
+import * as fs from 'fs';
+import * as config from './config.json';
+import Server from './model/Server';
+import errorMessages from './errorMessages.json';
+import IServersList from './model/IServersList';
 
-const prefixo = config.PREFIX;
+import { 
+    Message as DiscordMessage, 
+    Guild as DiscordGuild, 
+    Client as DiscordClient 
+} from 'discord.js';
 
-const servers = [];
+const client: DiscordClient = new DiscordClient();
+const prefix: string = config.PREFIX;
+const servers: IServersList = {};
 
 // Função responsável por rodar a aplicação inteira
 const run = () => {
     console.log("Rodando a aplicação...");
 
-    client.on("guildCreate", (guild) => {
+    dotenv.config();
+
+    client.on("guildCreate", (guild: DiscordGuild) => {
         // Salvar o ID do server no "serverList.json"
         saveServer(guild.id);
+        
         // Carregar novamente
         loadServers();
     });
@@ -24,86 +34,86 @@ const run = () => {
         loadServers();    
     });
     
-    client.on("message", async (msg) => {
+    client.on("message", async (msg: DiscordMessage) => {
         /* Filtros */
         // Se a mensagem não estiver vindo de um servidor
         if (!msg.guild) return;
         // Se a mensagem não começar com o prefixo ou a mensagem vier de um bot
-        if (!msg.content.startsWith(prefixo) || msg.author.bot) return;
+        if (!msg.content.startsWith(prefix) || msg.author.bot) return;
         // Se o membro não estiver em um canal de voz ao dar o comando
-        if (!msg.member.voice.channel) { 
-            msg.channel.send("Você precisa estar em um canal de voz.");
+        if (!msg.member?.voice.channel) {
+            msg.channel.send(errorMessages.mustBeConnectedVoiceChannel);
             return;
         }
 
         /* !p <url/nome> */
-        else if (msg.content.startsWith(prefixo + "p ")) {
+        else if (msg.content.startsWith(prefix + "p ")) {
             play(msg);
             return;
         }
 
         /* !join */
-        else if (msg.content === prefixo + "join") {
+        else if (msg.content === prefix + "join") {
             join(msg);
             return;
         }
 
         /* !help */
-        else if (msg.content === prefixo + "help") {
+        else if (msg.content === prefix + "help") {
             help(msg);
             return;
         }
 
-        // Se o bot não estiver conectado em um servidor
+        // Se o servidor não foi carregado
         if (servers[msg.guild.id] == null) {
-            msg.channel.send("Você precisa estar conectado em um canal de voz!");
+            msg.channel.send(errorMessages.mustBeConnectedVoiceChannel);
             return;
         }
 
         /* !leave */
-        else if (msg.content === prefixo + "leave") {
+        else if (msg.content === prefix + "leave") {
             leave(msg);
             return;
         }
 
         /* !pause */
-        else if (msg.content === prefixo + "pause") { 
+        else if (msg.content === prefix + "pause") { 
             pause(msg);
             return;
         }
 
         /* !resume */
-        else if (msg.content === prefixo + "resume") { 
+        else if (msg.content === prefix + "resume") { 
             resume(msg);
             return;
         }
 
         /* !queue */
-        else if (msg.content === prefixo + "queue") {
+        else if (msg.content === prefix + "queue") {
             queue(msg);
             return;
         }
 
         /* !clear */
-        else if (msg.content === prefixo + "clear") {
+        else if (msg.content === prefix + "clear") {
             clear(msg);
             return;
         }
 
         /* !r <numero> */
-        else if (msg.content.startsWith(prefixo + "r ")) {
+        else if (msg.content.startsWith(prefix + "r ")) {
             remove(msg);
             return;
         }
 
         /* !next */
-        else if (msg.content === prefixo + "next") {
+        else if (msg.content === prefix + "next") {
             next(msg);
             return;
         }
 
         /* !loop */
-        else if (msg.content === prefixo + "loop") {
+        else if (msg.content === prefix + "loop") {
             loop(msg);
             return;
         }
@@ -112,21 +122,21 @@ const run = () => {
          * Caso o código chegue nessa parte, ele não sofreu nenhum return, 
          * portanto, o comando não foi reconhecido
         */
-        msg.channel.send("Comando inválido, escreva **!help** para ver os comandos disponíveis.");
+        msg.channel.send(errorMessages.invalidCommand);
     });
     
     client.login(process.env.TOKEN_DISCORD);
 }
 
 const loadServers = () => {
-    fs.readFile("serverList.json", "utf8", (err, data) => {
+    fs.readFile("serverList.json", "utf8", (err: NodeJS.ErrnoException | null, data: string) => {
         if (err) {
             console.log("loadServers() => Erro ao ler arquivo json: " + err);
             return;
         }
 
         const objData = JSON.parse(data);
-        for (let i in objData.servers) {
+        for (let i = 0; i < objData.servers.length; i++) {
             servers[objData.servers[i]] = {
                 connection: null,
                 dispatcher: null,
@@ -141,7 +151,7 @@ const loadServers = () => {
     });
 }
 
-const saveServer = (id) => {
+const saveServer = (id: string) => {
     fs.readFile("serverList.json", "utf8", (err, data) => {
         if (err) {
             console.log("saveServer(id) => Erro ao ler arquivo json: " + err);
@@ -154,7 +164,7 @@ const saveServer = (id) => {
             objData.servers.push(id);
 
             // Converter os dados do objeto para json novamente 
-            const objJson = JSON.stringify(objData);
+            const objJson: string = JSON.stringify(objData);
             // Escrever o novo valor no serverList.json
             fs.writeFile("serverList.json", objJson, "utf8", () => {});
 
@@ -163,62 +173,52 @@ const saveServer = (id) => {
     });
 }
 
-const clearServerValues = (serverId) => {
-    server = servers[serverId];
-
-    with (server) {
-        connection = null;
-        dispatcher = null;
-        currentVideoUrl = null;
-        queue = [];
-        queuePosition = 0;
-        hasNextAudio = false;
-        paused = false;
-        loopEnabled = false;
-    }
+const clearServerValues = (serverId: string) => {
+    servers[serverId] = new Server();
 }
 
 // Atribui uma connection para o bot (função chamada quando ele se conecta a um voice channel)
-const assignConnection = async (msg) => {
+const assignConnection = async (msg: DiscordMessage) => {
     try {
-        servers[msg.guild.id].connection = await msg.member.voice.channel.join();
+        if (msg.guild == null) throw new Error(errorMessages.serverNotIdentified);
+        if (msg.member == null) throw new Error(errorMessages.memberNotIdentified);
+        if (msg.member.voice.channel == null) throw new Error(errorMessages.voiceChannelNotIdentified);
+
+        let server: Server = servers[msg.guild.id];
+
+        server.connection = await msg.member.voice.channel.join();
     
         // Se o bot desconectar, por qualquer motivo, esta função será chamada
-        servers[msg.guild.id].connection.on("disconnect", () => {
-            clearServerValues(msg.guild.id);
+        server.connection?.on("disconnect", () => {
+            if (msg.guild != null) clearServerValues(msg.guild.id);
         })
     } catch (err) {
         msg.channel.send(
-            "Um erro foi encontrado ao tentar se juntar ao canal...\n" +
-            "```Log: "+err.message+"```"
+            errorMessages.playAudioUnknownError +
+            "```Log: "+err+"```"
         )
     }
 }
 
-const hasNextAudio = (server) => {
+const hasNextAudio = (server: Server) => {
     return server.queuePosition + 1 < server.queue.length;
 }
 
 // Exportações
-module.exports = {
-    servers, 
-    clearServerValues,
-    assignConnection,
-    hasNextAudio
-}
+export { servers, clearServerValues, assignConnection, hasNextAudio }
 
 /* Commands */
-const play = require("./commands/play");
-const join = require("./commands/join");
-const leave = require("./commands/leave");
-const pause = require("./commands/pause");
-const resume = require("./commands/resume");
-const queue = require("./commands/queue");
-const clear = require("./commands/clear");
-const remove = require("./commands/remove");
-const next = require("./commands/next");
-const loop = require("./commands/loop");
-const help = require("./commands/help");
+import { play } from './commands/play';
+import { join } from './commands/join';
+import { leave } from './commands/leave';
+import { pause } from './commands/pause';
+import { resume } from './commands/resume';
+import { queue } from './commands/queue';
+import { clear } from './commands/clear';
+import { remove } from './commands/remove';
+import { next } from './commands/next';
+import { loop } from './commands/loop';
+import { help } from './commands/help';
 
 // Rodando a aplicação
 run();

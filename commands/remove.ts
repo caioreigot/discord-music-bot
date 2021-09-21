@@ -1,19 +1,29 @@
-const servers = require("../index.js").servers;
-const hasNextAudio = require("../index.js").hasNextAudio;
+import { Message as DiscordMessage } from 'discord.js';
+import { servers, hasNextAudio } from '../index';
+import errorMessages from '../errorMessages.json';
 
-module.exports = function(msg) {
-    let server = servers[msg.guild.id];
+import Server from '../model/Server';
 
-    let input = msg.content.slice(3);
-    let queuePosition = server.queuePosition;
-
-    if (!isInt(input)) {
-        msg.channel.send("Segundo argumento não é válido, use apenas números inteiros.");
+export function remove(msg: DiscordMessage) {
+    if (msg.guild == null) {
+        msg.channel.send(errorMessages.serverNotIdentified);
         return;
     }
 
+    let server: Server = servers[msg.guild.id];
+
+    let input: string | number = msg.content.slice(3);
+    let queuePosition: number = server.queuePosition;
+
+    if (!isInt(input)) {
+        msg.channel.send(errorMessages.secondArgumentNotValid);
+        return;
+    }
+
+    input = parseInt(input);
+
     if (input > server.queue.length || input <= 0) {
-        msg.channel.send("Não há nenhum áudio nesta posição.");
+        msg.channel.send(errorMessages.noAudioInThatPosition);
         return;
     }
 
@@ -27,6 +37,11 @@ module.exports = function(msg) {
 
     // Se remover o áudio atualmente tocando
     if (input - 1 == queuePosition) {
+        if (server.dispatcher == null) {
+            msg.channel.send(errorMessages.unknownError);
+            return;
+        }
+
         // Se o usuário não mandou remover o 1 áudio da lista
         if (input - 1 != 0) {
             server.queuePosition--;
@@ -40,12 +55,12 @@ module.exports = function(msg) {
     }
 
     server.hasNextAudio = hasNextAudio(server);
-    
+
     msg.channel.send("Áudio removido!");
 }
 
-function isInt(value) {
+function isInt(value: any): boolean {
     return !isNaN(value) 
-    && parseInt(Number(value)) == value
+    && parseInt(Number(value).toString()) == value
     && !isNaN(parseInt(value, 10));
 }

@@ -1,7 +1,8 @@
-const Discord = require("discord.js");
+import { MessageEmbed as DiscordMessageEmbed } from 'discord.js';
+import { Message as DiscordMessage } from 'discord.js';
 
-module.exports = function(msg) {
-    let embed = new Discord.MessageEmbed()
+export function help(msg: DiscordMessage) {
+    let embed: DiscordMessageEmbed = new DiscordMessageEmbed()
         .setColor([0, 191, 255])
         .setTitle("Comandos")
         .setDescription(

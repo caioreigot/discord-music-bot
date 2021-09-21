@@ -1,9 +1,16 @@
-const servers = require("../index.js").servers;
-const ytdl = require("ytdl-core");
-const Player = require("../functionalities/playAudio");
+import { Message as DiscordMessage } from 'discord.js';
+import { servers } from '../index';
+import errorMessages from '../errorMessages.json';
+import Player from '../functionalities/playAudio';
+import Server from '../model/Server';
 
-module.exports = function(msg) {
-    let server = servers[msg.guild.id];
+export function loop(msg: DiscordMessage) {
+    if (msg.guild == null) {
+        msg.channel.send(errorMessages.serverNotIdentified);
+        return;
+    }
+
+    let server: Server = servers[msg.guild.id];
 
     server.loopEnabled = !server.loopEnabled;
 
@@ -12,7 +19,7 @@ module.exports = function(msg) {
     
     // Se o loop foi ativado sem ter próximo áudio/nenhum áudio tocando
     if (server.loopEnabled && !server.hasNextAudio && server.dispatcher == null) {
-        const player = new Player(ytdl, server);
+        const player: Player = new Player(server);
 
         server.queuePosition = 0;
         player.playAudio(
