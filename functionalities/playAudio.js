@@ -10,6 +10,14 @@ function Player(ytdl, server) {
 
 // Função chamada quando um usuário faz uma requisição de áudio, que será adicionado na queue
 Player.prototype.playRequest = function(url, channel) {
+    for (i in this.server.queue) {
+        // Se esse áudio já foi adicionado na queue
+        if (this.server.queue[i].url == url) {
+            channel.send("Áudio já presente na fila!");
+            return;
+        }
+    }
+
     // Pegando as informações do vídeo para mostrar o título no chat
     this.ytdl.getInfo(url).then(info => {
         const videoTitle = info.videoDetails.title;
@@ -51,13 +59,7 @@ Player.prototype.playAudio = function(channel, url, videoTitle, audioDuration, i
             } else { // Se não houver próximo áudio na queue
                 // Se a opção de loop estiver ativa e houver músicas para tocar
                 if (this.server.loopEnabled && this.server.queue.length > 0) { 
-                    this.server.queuePosition = 0;
-                    this.playAudio(
-                        channel,
-                        this.server.queue[this.server.queuePosition].url, 
-                        this.server.queue[this.server.queuePosition].title,
-                        this.server.queue[this.server.queuePosition].duration
-                    );
+                    restartQueue(channel);
                 }
             }
         });
@@ -66,6 +68,16 @@ Player.prototype.playAudio = function(channel, url, videoTitle, audioDuration, i
     }
 
     this.showPlayerStatus(channel, url, videoTitle, audioDuration);
+}
+
+Player.prototype.restartQueue = function(channel) {
+    this.server.queuePosition = 0;
+    this.playAudio(
+        channel,
+        this.server.queue[this.server.queuePosition].url, 
+        this.server.queue[this.server.queuePosition].title,
+        this.server.queue[this.server.queuePosition].duration
+    );
 }
 
 Player.prototype.showPlayerStatus = function(channel, url, videoTitle, audioDuration) {

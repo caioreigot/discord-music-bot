@@ -13,11 +13,10 @@ const run = () => {
     console.log("Rodando a aplicação...");
 
     client.on("guildCreate", (guild) => {
-        // Inicializar todas as propriedades do server
-        initializeServerObj(guild.id);
-    
         // Salvar o ID do server no "serverList.json"
         saveServer(guild.id);
+        // Carregar novamente
+        loadServers();
     });
     
     client.on("ready", () => {
@@ -178,6 +177,7 @@ const clearServerValues = (serverId) => {
     }
 }
 
+// Atribui uma connection para o bot (função chamada quando ele se conecta a um voice channel)
 const assignConnection = async (msg) => {
     try {
         servers[msg.guild.id].connection = await msg.member.voice.channel.join();
