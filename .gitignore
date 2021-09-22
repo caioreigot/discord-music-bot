@@ -1,6 +1,3 @@
-# Folder where javascript codes are generated
-dist/
-
 # Logs
 logs
 *.log
