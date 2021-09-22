@@ -1,6 +1,0 @@
-{
-    "PREFIX": "!",
-    "YTDL": {
-        "filter": "audioonly"
-    }
-}
