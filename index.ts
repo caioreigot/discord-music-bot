@@ -46,19 +46,19 @@ const run = () => {
             return;
         }
 
-        /* !p <url/nome> */
+        /* prefixo + p <url/nome> */
         else if (msg.content.startsWith(prefix + "p ")) {
             play(msg);
             return;
         }
 
-        /* !join */
+        /* prefixo + join */
         else if (msg.content === prefix + "join") {
             join(msg);
             return;
         }
 
-        /* !help */
+        /* prefixo + help */
         else if (msg.content === prefix + "help") {
             help(msg);
             return;
@@ -70,49 +70,49 @@ const run = () => {
             return;
         }
 
-        /* !leave */
+        /* prefixo + leave */
         else if (msg.content === prefix + "leave") {
             leave(msg);
             return;
         }
 
-        /* !pause */
+        /* prefixo + pause */
         else if (msg.content === prefix + "pause") { 
             pause(msg);
             return;
         }
 
-        /* !resume */
+        /* prefixo + resume */
         else if (msg.content === prefix + "resume") { 
             resume(msg);
             return;
         }
 
-        /* !queue */
+        /* prefixo + queue */
         else if (msg.content === prefix + "queue") {
             queue(msg);
             return;
         }
 
-        /* !clear */
+        /* prefixo + clear */
         else if (msg.content === prefix + "clear") {
             clear(msg);
             return;
         }
 
-        /* !r <numero> */
+        /* prefixo + r <numero> */
         else if (msg.content.startsWith(prefix + "r ")) {
             remove(msg);
             return;
         }
 
-        /* !next */
+        /* prefixo + next */
         else if (msg.content === prefix + "next") {
             next(msg);
             return;
         }
 
-        /* !loop */
+        /* prefixo + loop */
         else if (msg.content === prefix + "loop") {
             loop(msg);
             return;
