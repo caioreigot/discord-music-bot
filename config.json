@@ -1,6 +1,4 @@
 {
     "PREFIX": "-",
-    "YTDL": {
-        "filter": "audioonly"
-    }
+    "YTDL": {"filter": "audioonly"}
 }

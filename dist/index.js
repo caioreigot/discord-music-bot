@@ -70,17 +70,17 @@ const run = () => {
             msg.channel.send(errorMessages_json_1.default.mustBeConnectedVoiceChannel);
             return;
         }
-        /* !p <url/nome> */
+        /* prefixo + p <url/nome> */
         else if (msg.content.startsWith(prefix + "p ")) {
             (0, play_1.play)(msg);
             return;
         }
-        /* !join */
+        /* prefixo + join */
         else if (msg.content === prefix + "join") {
             (0, join_1.join)(msg);
             return;
         }
-        /* !help */
+        /* prefixo + help */
         else if (msg.content === prefix + "help") {
             (0, help_1.help)(msg);
             return;
@@ -90,42 +90,42 @@ const run = () => {
             msg.channel.send(errorMessages_json_1.default.mustBeConnectedVoiceChannel);
             return;
         }
-        /* !leave */
+        /* prefixo + leave */
         else if (msg.content === prefix + "leave") {
             (0, leave_1.leave)(msg);
             return;
         }
-        /* !pause */
+        /* prefixo + pause */
         else if (msg.content === prefix + "pause") {
             (0, pause_1.pause)(msg);
             return;
         }
-        /* !resume */
+        /* prefixo + resume */
         else if (msg.content === prefix + "resume") {
             (0, resume_1.resume)(msg);
             return;
         }
-        /* !queue */
+        /* prefixo + queue */
         else if (msg.content === prefix + "queue") {
             (0, queue_1.queue)(msg);
             return;
         }
-        /* !clear */
+        /* prefixo + clear */
         else if (msg.content === prefix + "clear") {
             (0, clear_1.clear)(msg);
             return;
         }
-        /* !r <numero> */
+        /* prefixo + r <numero> */
         else if (msg.content.startsWith(prefix + "r ")) {
             (0, remove_1.remove)(msg);
             return;
         }
-        /* !next */
+        /* prefixo + next */
         else if (msg.content === prefix + "next") {
             (0, next_1.next)(msg);
             return;
         }
-        /* !loop */
+        /* prefixo + loop */
         else if (msg.content === prefix + "loop") {
             (0, loop_1.loop)(msg);
             return;

@@ -19,13 +19,15 @@ const getYoutubeVideoUrl_1 = __importDefault(require("../functionalities/getYout
 const errorMessages_json_1 = __importDefault(require("../errorMessages.json"));
 const playAudio_1 = __importDefault(require("../functionalities/playAudio"));
 function play(msg) {
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         if (msg.guild == null) {
             msg.channel.send(errorMessages_json_1.default.serverNotIdentified);
             return;
         }
         // Se o usuário deu o comando !p sem o bot estar conectado no canal de voz
-        if (index_1.servers[msg.guild.id].connection == null) {
+        if (!index_1.servers[msg.guild.id].connection ||
+            ((_a = index_1.servers[msg.guild.id].connection) === null || _a === void 0 ? void 0 : _a.channel) != ((_b = msg.member) === null || _b === void 0 ? void 0 : _b.voice.channel)) {
             // Conectar no canal de voz
             yield (0, index_1.assignConnection)(msg);
         }

@@ -6,7 +6,7 @@ import {
 import QueueObject from './QueueObject';
 
 export default class Server {
-    
+
     public connection: DiscordVoiceConnection | null;
     public dispatcher: DiscordStreamDispatcher | null;
     public currentVideoUrl: string | null;
