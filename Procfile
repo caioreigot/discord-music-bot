@@ -1,1 +1,1 @@
-worker: node index.js
+worker: tsc && node dist/index.js

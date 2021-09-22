@@ -19,6 +19,8 @@ export function loop(msg: DiscordMessage) {
     
     // Se o loop foi ativado sem ter próximo áudio/nenhum áudio tocando
     if (server.loopEnabled && !server.hasNextAudio && server.dispatcher == null) {
+        if (server.queue[server.queuePosition] == undefined) return;
+        
         const player: Player = new Player(server);
 
         server.queuePosition = 0;
