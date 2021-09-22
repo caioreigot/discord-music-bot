@@ -31,17 +31,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.hasNextAudio = exports.assignConnection = exports.clearServerValues = exports.servers = void 0;
+exports.saveAndLoadServer = exports.hasNextAudio = exports.assignConnection = exports.clearServerValues = exports.servers = void 0;
 const dotenv = __importStar(require("dotenv"));
 const fs = __importStar(require("fs"));
-const config = __importStar(require("./config.json"));
+const config_json_1 = __importDefault(require("./config.json"));
 const Server_1 = __importDefault(require("./model/Server"));
 const errorMessages_json_1 = __importDefault(require("./errorMessages.json"));
 const discord_js_1 = require("discord.js");
 const client = new discord_js_1.Client();
-const prefix = config.PREFIX;
+const prefix = config_json_1.default.PREFIX;
 const servers = {};
 exports.servers = servers;
+/* Commands */
+const play_1 = require("./commands/play");
+const join_1 = require("./commands/join");
+const leave_1 = require("./commands/leave");
+const pause_1 = require("./commands/pause");
+const resume_1 = require("./commands/resume");
+const queue_1 = require("./commands/queue");
+const clear_1 = require("./commands/clear");
+const remove_1 = require("./commands/remove");
+const next_1 = require("./commands/next");
+const loop_1 = require("./commands/loop");
+const help_1 = require("./commands/help");
 // Função responsável por rodar a aplicação inteira
 const run = () => {
     console.log("Rodando a aplicação...");
@@ -138,45 +150,6 @@ const run = () => {
     }));
     client.login(process.env.TOKEN_DISCORD);
 };
-const loadServers = () => {
-    fs.readFile("serverList.json", "utf8", (err, data) => {
-        if (err) {
-            console.log("loadServers() => Erro ao ler arquivo json: " + err);
-            return;
-        }
-        const objData = JSON.parse(data);
-        for (let i = 0; i < objData.servers.length; i++) {
-            servers[objData.servers[i]] = {
-                connection: null,
-                dispatcher: null,
-                currentVideoUrl: null,
-                queue: [],
-                queuePosition: 0,
-                hasNextAudio: false,
-                paused: false,
-                loopEnabled: false
-            };
-        }
-    });
-};
-const saveServer = (id) => {
-    fs.readFile("serverList.json", "utf8", (err, data) => {
-        if (err) {
-            console.log("saveServer(id) => Erro ao ler arquivo json: " + err);
-            return;
-        }
-        const objData = JSON.parse(data);
-        // Se o ID do servidor não existir no array
-        if (!objData.servers.includes(id)) {
-            objData.servers.push(id);
-            // Converter os dados do objeto para json novamente 
-            const objJson = JSON.stringify(objData);
-            // Escrever o novo valor no serverList.json
-            fs.writeFile("serverList.json", objJson, "utf8", () => { });
-            console.log("ID do servidor salvo no arquivo json.");
-        }
-    });
-};
 const clearServerValues = (serverId) => {
     servers[serverId] = new Server_1.default();
 };
@@ -192,6 +165,10 @@ const assignConnection = (msg) => __awaiter(void 0, void 0, void 0, function* ()
         if (msg.member.voice.channel == null)
             throw new Error(errorMessages_json_1.default.voiceChannelNotIdentified);
         let server = servers[msg.guild.id];
+        if (msg.member.voice.channel.full) {
+            msg.channel.send(errorMessages_json_1.default.voiceChannelFull);
+            return;
+        }
         server.connection = yield msg.member.voice.channel.join();
         // Se o bot desconectar, por qualquer motivo, esta função será chamada
         (_a = server.connection) === null || _a === void 0 ? void 0 : _a.on("disconnect", () => {
@@ -205,21 +182,60 @@ const assignConnection = (msg) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.assignConnection = assignConnection;
+const saveServer = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let data = fs.readFileSync("serverList.json", "utf8");
+        const objData = JSON.parse(data);
+        // Se o ID do servidor não existir no array
+        if (!objData.servers.includes(id)) {
+            objData.servers.push(id);
+            // Converter os dados do objeto para json novamente 
+            const objJson = JSON.stringify(objData);
+            // Escrever o novo valor no serverList.json
+            fs.writeFileSync("serverList.json", objJson, "utf8");
+            console.log(`ID ${id} servidor salvo no arquivo json.`);
+        }
+    }
+    catch (err) {
+        console.log("saveServer(id) => Erro ao ler arquivo json: " + err);
+        return;
+    }
+});
+const loadServers = () => {
+    try {
+        let data = fs.readFileSync("serverList.json", "utf8");
+        const objData = JSON.parse(data);
+        ;
+        for (let i = 0; i < objData.servers.length; i++) {
+            servers[objData.servers[i]] = {
+                connection: null,
+                dispatcher: null,
+                currentVideoUrl: null,
+                queue: [],
+                queuePosition: 0,
+                hasNextAudio: false,
+                paused: false,
+                loopEnabled: false
+            };
+        }
+    }
+    catch (err) {
+        console.log("loadServers() => Erro ao ler arquivo json: " + err);
+        return;
+    }
+};
+const saveAndLoadServer = (msg) => __awaiter(void 0, void 0, void 0, function* () {
+    if (msg.guild == null) {
+        msg.channel.send(errorMessages_json_1.default.serverNotIdentified);
+        return;
+    }
+    saveServer(msg.guild.id);
+    loadServers();
+});
+exports.saveAndLoadServer = saveAndLoadServer;
 const hasNextAudio = (server) => {
     return server.queuePosition + 1 < server.queue.length;
 };
 exports.hasNextAudio = hasNextAudio;
-/* Commands */
-const play_1 = require("./commands/play");
-const join_1 = require("./commands/join");
-const leave_1 = require("./commands/leave");
-const pause_1 = require("./commands/pause");
-const resume_1 = require("./commands/resume");
-const queue_1 = require("./commands/queue");
-const clear_1 = require("./commands/clear");
-const remove_1 = require("./commands/remove");
-const next_1 = require("./commands/next");
-const loop_1 = require("./commands/loop");
-const help_1 = require("./commands/help");
 // Rodando a aplicação
 run();

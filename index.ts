@@ -1,19 +1,43 @@
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
-import * as config from './config.json';
+import config from './config.json';
 import Server from './model/Server';
 import errorMessages from './errorMessages.json';
 import IServersList from './model/IServersList';
 
 import { 
-    Message as DiscordMessage, 
+    Message as DiscordMessage,
     Guild as DiscordGuild, 
-    Client as DiscordClient 
+    Client as DiscordClient, 
+    VoiceChannel
 } from 'discord.js';
 
 const client: DiscordClient = new DiscordClient();
 const prefix: string = config.PREFIX;
 const servers: IServersList = {};
+
+// Exportações
+export { 
+    servers, 
+    clearServerValues, 
+    assignConnection, 
+    hasNextAudio,
+    saveAndLoadServer 
+}
+
+/* Commands */
+import { play } from './commands/play';
+import { join } from './commands/join';
+import { leave } from './commands/leave';
+import { pause } from './commands/pause';
+import { resume } from './commands/resume';
+import { queue } from './commands/queue';
+import { clear } from './commands/clear';
+import { remove } from './commands/remove';
+import { next } from './commands/next';
+import { loop } from './commands/loop';
+import { help } from './commands/help';
+import { Options } from 'ansi-regex';
 
 // Função responsável por rodar a aplicação inteira
 const run = () => {
@@ -128,51 +152,6 @@ const run = () => {
     client.login(process.env.TOKEN_DISCORD);
 }
 
-const loadServers = () => {
-    fs.readFile("serverList.json", "utf8", (err: NodeJS.ErrnoException | null, data: string) => {
-        if (err) {
-            console.log("loadServers() => Erro ao ler arquivo json: " + err);
-            return;
-        }
-
-        const objData = JSON.parse(data);
-        for (let i = 0; i < objData.servers.length; i++) {
-            servers[objData.servers[i]] = {
-                connection: null,
-                dispatcher: null,
-                currentVideoUrl: null,
-                queue: [],
-                queuePosition: 0,
-                hasNextAudio: false,
-                paused: false,
-                loopEnabled: false
-            };
-        }
-    });
-}
-
-const saveServer = (id: string) => {
-    fs.readFile("serverList.json", "utf8", (err, data) => {
-        if (err) {
-            console.log("saveServer(id) => Erro ao ler arquivo json: " + err);
-            return;
-        }
-
-        const objData = JSON.parse(data);
-        // Se o ID do servidor não existir no array
-        if (!objData.servers.includes(id)) {
-            objData.servers.push(id);
-
-            // Converter os dados do objeto para json novamente 
-            const objJson: string = JSON.stringify(objData);
-            // Escrever o novo valor no serverList.json
-            fs.writeFile("serverList.json", objJson, "utf8", () => {});
-
-            console.log("ID do servidor salvo no arquivo json.");
-        }
-    });
-}
-
 const clearServerValues = (serverId: string) => {
     servers[serverId] = new Server();
 }
@@ -185,6 +164,11 @@ const assignConnection = async (msg: DiscordMessage) => {
         if (msg.member.voice.channel == null) throw new Error(errorMessages.voiceChannelNotIdentified);
 
         let server: Server = servers[msg.guild.id];
+
+        if (msg.member.voice.channel.full) {
+            msg.channel.send(errorMessages.voiceChannelFull);
+            return;
+        }
 
         server.connection = await msg.member.voice.channel.join();
     
@@ -200,25 +184,65 @@ const assignConnection = async (msg: DiscordMessage) => {
     }
 }
 
+const saveServer = async (id: string) => {
+    try {
+        let data: string = fs.readFileSync("serverList.json", "utf8");
+        const objData = JSON.parse(data);
+        
+        // Se o ID do servidor não existir no array
+        if (!objData.servers.includes(id)) {
+            objData.servers.push(id);
+
+            // Converter os dados do objeto para json novamente 
+            const objJson: string = JSON.stringify(objData);
+            // Escrever o novo valor no serverList.json
+            fs.writeFileSync("serverList.json", objJson, "utf8");
+
+            console.log(`ID ${id} servidor salvo no arquivo json.`);
+        }
+    } catch (err) {
+        console.log("saveServer(id) => Erro ao ler arquivo json: " + err);
+        return;
+    }
+}
+
+const loadServers = () => {
+    try {
+        let data: string = fs.readFileSync("serverList.json", "utf8");
+
+        const objData = JSON.parse(data);;
+    
+        for (let i = 0; i < objData.servers.length; i++) {
+            servers[objData.servers[i]] = {
+                connection: null,
+                dispatcher: null,
+                currentVideoUrl: null,
+                queue: [],
+                queuePosition: 0,
+                hasNextAudio: false,
+                paused: false,
+                loopEnabled: false
+            };
+        }
+    } catch (err) {
+        console.log("loadServers() => Erro ao ler arquivo json: " + err);
+        return;
+    }
+}
+
+const saveAndLoadServer = async (msg: DiscordMessage) => {
+    if (msg.guild == null) {
+        msg.channel.send(errorMessages.serverNotIdentified);
+        return;
+    }
+
+    saveServer(msg.guild.id);
+    loadServers();
+}
+
 const hasNextAudio = (server: Server) => {
     return server.queuePosition + 1 < server.queue.length;
 }
-
-// Exportações
-export { servers, clearServerValues, assignConnection, hasNextAudio }
-
-/* Commands */
-import { play } from './commands/play';
-import { join } from './commands/join';
-import { leave } from './commands/leave';
-import { pause } from './commands/pause';
-import { resume } from './commands/resume';
-import { queue } from './commands/queue';
-import { clear } from './commands/clear';
-import { remove } from './commands/remove';
-import { next } from './commands/next';
-import { loop } from './commands/loop';
-import { help } from './commands/help';
 
 // Rodando a aplicação
 run();

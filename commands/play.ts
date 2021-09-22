@@ -1,6 +1,6 @@
 import ytdl from 'ytdl-core';
 import { Message as DiscordMessage } from 'discord.js';
-import { servers, assignConnection } from '../index';
+import { servers, assignConnection, saveAndLoadServer } from '../index';
 import getYoutubeVideoUrl from '../functionalities/getYoutubeVideoUrl';
 import errorMessages from '../errorMessages.json';
 import Player from '../functionalities/playAudio';
@@ -11,12 +11,19 @@ export async function play(msg: DiscordMessage) {
         return;
     }
 
+    if (servers[msg.guild.id] === undefined) {
+        saveAndLoadServer(msg);
+    }
+
     // Se o usuário deu o comando !p sem o bot estar conectado no canal de voz
-    if (!servers[msg.guild.id].connection || 
+    if (servers[msg.guild.id].connection === null || 
         servers[msg.guild.id].connection?.channel != msg.member?.voice.channel 
-        ) {
+    ) {
         // Conectar no canal de voz
         await assignConnection(msg);
+
+        // Se a conexão ainda for "null", retorne
+        if (servers[msg.guild.id].connection === null) return;
     }
 
     const player: Player = new Player(servers[msg.guild.id]);
