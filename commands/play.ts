@@ -12,7 +12,9 @@ export async function play(msg: DiscordMessage) {
     }
 
     // Se o usuário deu o comando !p sem o bot estar conectado no canal de voz
-    if (servers[msg.guild.id].connection == null) {
+    if (!servers[msg.guild.id].connection || 
+        servers[msg.guild.id].connection?.channel != msg.member?.voice.channel 
+        ) {
         // Conectar no canal de voz
         await assignConnection(msg);
     }
