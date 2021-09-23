@@ -65,7 +65,9 @@ const run = () => {
         loadServers();
     });
     client.on("ready", () => {
+        var _a;
         console.log("O bot está online.");
+        (_a = client.user) === null || _a === void 0 ? void 0 : _a.setActivity(`${prefix}help`, { type: "LISTENING" });
         loadServers();
     });
     client.on("message", (msg) => __awaiter(void 0, void 0, void 0, function* () {

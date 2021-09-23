@@ -37,7 +37,6 @@ import { remove } from './commands/remove';
 import { next } from './commands/next';
 import { loop } from './commands/loop';
 import { help } from './commands/help';
-import { Options } from 'ansi-regex';
 
 // Função responsável por rodar a aplicação inteira
 const run = () => {
@@ -55,6 +54,11 @@ const run = () => {
     
     client.on("ready", () => {
         console.log("O bot está online.");
+
+        client.user?.setActivity(
+            `${prefix}help`, { type: "LISTENING" }
+        );
+
         loadServers();    
     });
     
