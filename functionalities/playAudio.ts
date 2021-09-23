@@ -36,6 +36,10 @@ export default class Player {
             this.server.queue.push(new QueueObject(url, videoTitle, audioDuration));
             this.server.hasNextAudio = hasNextAudio(this.server);
             this.playAudio(channel, url, videoTitle, audioDuration, true);
+
+            // Mostrar mensagem no chat (status do player)
+            let status = (url == this.server.currentVideoUrl) ? "Tocando" : "Adicionado à fila"
+            channel.send(`${status}: **${videoTitle}** `+"``["+audioDuration+"]``");
         });
     }
 
@@ -88,9 +92,10 @@ export default class Player {
             this.server.currentVideoUrl = url;
         }
 
-        // Mostrar mensagem no chat (status do player)
+        /*
         let status = (url == this.server.currentVideoUrl) ? "Tocando" : "Adicionado à fila"
         channel.send(`${status}: **${videoTitle}** `+"``["+audioDuration+"]``");
+        */
     }
 
     public restartQueue = (channel: TextChannel | DMChannel | NewsChannel) => {

@@ -28,7 +28,7 @@ export async function play(msg: DiscordMessage) {
 
     const player: Player = new Player(servers[msg.guild.id]);
     let input: string = msg.content.slice(3);
-    
+
     // Verificar se é uma URL
     if (ytdl.validateURL(input)) {
         player.playRequest(input, msg.channel);

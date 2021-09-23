@@ -27,6 +27,9 @@ class Player {
                 this.server.queue.push(new QueueObject_1.default(url, videoTitle, audioDuration));
                 this.server.hasNextAudio = (0, index_js_1.hasNextAudio)(this.server);
                 this.playAudio(channel, url, videoTitle, audioDuration, true);
+                // Mostrar mensagem no chat (status do player)
+                let status = (url == this.server.currentVideoUrl) ? "Tocando" : "Adicionado à fila";
+                channel.send(`${status}: **${videoTitle}** ` + "``[" + audioDuration + "]``");
             });
         };
         // Função chamada para tocar, diretamente, um áudio, sem adicioná-lo na queue
@@ -61,9 +64,10 @@ class Player {
                 });
                 this.server.currentVideoUrl = url;
             }
-            // Mostrar mensagem no chat (status do player)
-            let status = (url == this.server.currentVideoUrl) ? "Tocando" : "Adicionado à fila";
-            channel.send(`${status}: **${videoTitle}** ` + "``[" + audioDuration + "]``");
+            /*
+            let status = (url == this.server.currentVideoUrl) ? "Tocando" : "Adicionado à fila"
+            channel.send(`${status}: **${videoTitle}** `+"``["+audioDuration+"]``");
+            */
         };
         this.restartQueue = (channel) => {
             this.server.queuePosition = 0;
