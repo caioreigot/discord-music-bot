@@ -1,7 +1,7 @@
 import { Message as DiscordMessage } from 'discord.js';
 import { servers, hasNextAudio } from '../index';
 import errorMessages from '../errorMessages.json';
-
+import successMessage from '../successMessages.json';
 import Server from '../model/Server';
 
 export function remove(msg: DiscordMessage) {
@@ -56,7 +56,7 @@ export function remove(msg: DiscordMessage) {
 
     server.hasNextAudio = hasNextAudio(server);
 
-    msg.channel.send("Áudio removido!");
+    msg.channel.send(successMessage.audioRemoved);
 }
 
 function isInt(value: any): boolean {

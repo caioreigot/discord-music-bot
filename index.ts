@@ -8,15 +8,14 @@ import IServersList from './model/IServersList';
 import { 
     Message as DiscordMessage,
     Guild as DiscordGuild, 
-    Client as DiscordClient, 
-    VoiceChannel
+    Client as DiscordClient
 } from 'discord.js';
 
 const client: DiscordClient = new DiscordClient();
 const prefix: string = config.PREFIX;
 const servers: IServersList = {};
 
-// Exportações
+/* Exportações */
 export { 
     servers, 
     clearServerValues, 
@@ -35,6 +34,7 @@ import { queue } from './commands/queue';
 import { clear } from './commands/clear';
 import { remove } from './commands/remove';
 import { next } from './commands/next';
+import { shuffle } from './commands/shuffle';
 import { loop } from './commands/loop';
 import { help } from './commands/help';
 
@@ -47,11 +47,11 @@ const run = () => {
     client.on("guildCreate", (guild: DiscordGuild) => {
         // Salvar o ID do server no "serverList.json"
         saveServer(guild.id);
-        
+
         // Carregar novamente
         loadServers();
     });
-    
+
     client.on("ready", () => {
         console.log("O bot está online.");
 
@@ -140,6 +140,12 @@ const run = () => {
             return;
         }
 
+        /* prefixo + shuffle */
+        else if (msg.content === prefix + "shuffle") {
+            shuffle(msg);
+            return;
+        }
+
         /* prefixo + loop */
         else if (msg.content === prefix + "loop") {
             loop(msg);
@@ -175,7 +181,7 @@ const assignConnection = async (msg: DiscordMessage) => {
         }
 
         server.connection = await msg.member.voice.channel.join();
-    
+
         // Se o bot desconectar, por qualquer motivo, esta função será chamada
         server.connection?.on("disconnect", () => {
             if (msg.guild != null) clearServerValues(msg.guild.id);

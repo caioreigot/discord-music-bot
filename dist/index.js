@@ -52,6 +52,7 @@ const queue_1 = require("./commands/queue");
 const clear_1 = require("./commands/clear");
 const remove_1 = require("./commands/remove");
 const next_1 = require("./commands/next");
+const shuffle_1 = require("./commands/shuffle");
 const loop_1 = require("./commands/loop");
 const help_1 = require("./commands/help");
 // Função responsável por rodar a aplicação inteira
@@ -137,6 +138,11 @@ const run = () => {
         /* prefixo + next */
         else if (msg.content === prefix + "next") {
             (0, next_1.next)(msg);
+            return;
+        }
+        /* prefixo + shuffle */
+        else if (msg.content === prefix + "shuffle") {
+            (0, shuffle_1.shuffle)(msg);
             return;
         }
         /* prefixo + loop */

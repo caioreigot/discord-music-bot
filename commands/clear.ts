@@ -2,6 +2,7 @@ import { Message as DiscordMessage } from 'discord.js';
 import { servers, hasNextAudio } from '../index';
 import Server from '../model/Server';
 import errorMessages from '../errorMessages.json';
+import successMessages from '../successMessages.json';
 
 export function clear(msg: DiscordMessage) {
     if (msg.guild == null) {
@@ -18,5 +19,5 @@ export function clear(msg: DiscordMessage) {
     server.queuePosition = 0;
     server.hasNextAudio = hasNextAudio(server);
 
-    msg.channel.send("Fila limpa.");
+    msg.channel.send(successMessages.queueCleared);
 }

@@ -2,6 +2,7 @@ import { Message as DiscordMessage } from 'discord.js';
 import { servers } from '../index';
 import Server from '../model/Server';
 import errorMessages from '../errorMessages.json';
+import successMessages from '../successMessages.json'
 
 export function resume(msg: DiscordMessage) {
     if (msg.guild == null) {
@@ -22,7 +23,7 @@ export function resume(msg: DiscordMessage) {
         server.dispatcher.pause();
         server.dispatcher.resume();
         server.paused = false;
-        msg.channel.send("Música despausada.");
+        msg.channel.send(successMessages.audioResumed);
     } else {
         msg.channel.send(errorMessages.audioAlreadyUnpaused);
     }

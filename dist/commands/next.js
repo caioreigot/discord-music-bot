@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.next = void 0;
 const index_1 = require("../index");
 const errorMessages_json_1 = __importDefault(require("../errorMessages.json"));
+const successMessages_json_1 = __importDefault(require("../successMessages.json"));
 function next(msg) {
     if (msg.guild == null) {
         msg.channel.send(errorMessages_json_1.default.serverNotIdentified);
@@ -15,7 +16,7 @@ function next(msg) {
     // Se houver próximo áudio na queue
     if (server.queuePosition + 1 < server.queue.length && server.dispatcher != null) {
         server.dispatcher.end();
-        msg.channel.send("Áudio atual pulado.");
+        msg.channel.send(successMessages_json_1.default.audioSkipped);
     }
     else {
         msg.channel.send(errorMessages_json_1.default.noNextAudio);

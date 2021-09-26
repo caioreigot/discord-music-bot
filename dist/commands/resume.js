@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resume = void 0;
 const index_1 = require("../index");
 const errorMessages_json_1 = __importDefault(require("../errorMessages.json"));
+const successMessages_json_1 = __importDefault(require("../successMessages.json"));
 function resume(msg) {
     if (msg.guild == null) {
         msg.channel.send(errorMessages_json_1.default.serverNotIdentified);
@@ -24,7 +25,7 @@ function resume(msg) {
         server.dispatcher.pause();
         server.dispatcher.resume();
         server.paused = false;
-        msg.channel.send("Música despausada.");
+        msg.channel.send(successMessages_json_1.default.audioResumed);
     }
     else {
         msg.channel.send(errorMessages_json_1.default.audioAlreadyUnpaused);

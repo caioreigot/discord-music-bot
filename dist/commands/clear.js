@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.clear = void 0;
 const index_1 = require("../index");
 const errorMessages_json_1 = __importDefault(require("../errorMessages.json"));
+const successMessages_json_1 = __importDefault(require("../successMessages.json"));
 function clear(msg) {
     var _a;
     if (msg.guild == null) {
@@ -19,6 +20,6 @@ function clear(msg) {
     server.queue = [];
     server.queuePosition = 0;
     server.hasNextAudio = (0, index_1.hasNextAudio)(server);
-    msg.channel.send("Fila limpa.");
+    msg.channel.send(successMessages_json_1.default.queueCleared);
 }
 exports.clear = clear;

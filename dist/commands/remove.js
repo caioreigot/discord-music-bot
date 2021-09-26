@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.remove = void 0;
 const index_1 = require("../index");
 const errorMessages_json_1 = __importDefault(require("../errorMessages.json"));
+const successMessages_json_1 = __importDefault(require("../successMessages.json"));
 function remove(msg) {
     if (msg.guild == null) {
         msg.channel.send(errorMessages_json_1.default.serverNotIdentified);
@@ -46,7 +47,7 @@ function remove(msg) {
         server.dispatcher.end();
     }
     server.hasNextAudio = (0, index_1.hasNextAudio)(server);
-    msg.channel.send("Áudio removido!");
+    msg.channel.send(successMessages_json_1.default.audioRemoved);
 }
 exports.remove = remove;
 function isInt(value) {

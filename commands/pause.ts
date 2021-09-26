@@ -1,7 +1,8 @@
 import { Message as DiscordMessage } from 'discord.js';
+import { servers } from '../index.js';
 import Server from '../model/Server';
-const servers = require("../index.js").servers;
 import errorMessages from '../errorMessages.json';
+import successMessages from '../successMessages.json';
 
 export function pause(msg: DiscordMessage) {
     if (msg.guild == null) {
@@ -15,7 +16,7 @@ export function pause(msg: DiscordMessage) {
         if (server.dispatcher != null) {
             server.dispatcher.pause();
             server.paused = true;
-            msg.channel.send("Áudio pausado! Escreva **!resume** para despausar.");
+            msg.channel.send(successMessages.audioPaused);
         }
     } else {
         msg.channel.send(errorMessages.audioAlreadyPaused);

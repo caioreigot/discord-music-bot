@@ -1,0 +1,8 @@
+{
+    "audioPaused": "Áudio pausado! Escreva **!resume** para despausar.",
+    "audioResumed": "Áudio despausado.",
+    "queueCleared": "Fila limpa.",
+    "audioRemoved": "Áudio removido!",
+    "audioSkipped": "Áudio atual pulado.",
+    "queueShuffled": "Fila embaralhada."
+}
