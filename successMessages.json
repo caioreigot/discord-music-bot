@@ -2,6 +2,7 @@
     "audioPaused": "Áudio pausado! Escreva **!resume** para despausar.",
     "audioResumed": "Áudio despausado.",
     "queueCleared": "Fila limpa.",
+    "playlistBeingAdded": "Adicionando áudios da playlist na fila...",
     "audioRemoved": "Áudio removido!",
     "audioSkipped": "Áudio atual pulado.",
     "queueShuffled": "Fila embaralhada."

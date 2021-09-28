@@ -14,7 +14,8 @@ export default class Server {
     public queuePosition: number;
     public hasNextAudio: boolean;
     public paused: boolean;
-    public loopEnabled: boolean
+    public allowPlaylist: boolean;
+    public loopEnabled: boolean;
 
     constructor() {
         this.connection = null;
@@ -24,6 +25,7 @@ export default class Server {
         this.queuePosition = 0;
         this.hasNextAudio = false;
         this.paused = false;
+        this.allowPlaylist = true;
         this.loopEnabled = false;
     }
 }

@@ -1,17 +1,25 @@
 import { Message as DiscordMessage } from 'discord.js';
 import { servers } from '../index';
 import QueueObject from '../model/QueueObject';
-import errorMessages from '../errorMessages.json';
+import errorMessages from '../errorMessages.json'
 import successMessages from '../successMessages.json';
+import Server from '../model/Server';
 
-export function shuffle(msg: DiscordMessage) {
+export default function shuffle(msg: DiscordMessage) {
     if (msg.guild == null) {
         msg.channel.send(errorMessages.serverNotIdentified);
         return;
     }
 
-    const queue: Array<QueueObject> = servers[msg.guild.id].queue;
-    const queuePosition: number = servers[msg.guild.id].queuePosition;
+    let server: Server = servers[msg.guild.id];
+
+    if (server.queue.length == 0) {
+        msg.channel.send(errorMessages.emptyQueue);
+        return;
+    }
+
+    const queue: Array<QueueObject> = server.queue;
+    const queuePosition: number = server.queuePosition;
     shuffleQueue(queue, queuePosition);
 
     msg.channel.send(successMessages.queueShuffled);

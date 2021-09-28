@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loop = void 0;
 const index_1 = require("../index");
 const errorMessages_json_1 = __importDefault(require("../errorMessages.json"));
 const playAudio_1 = __importDefault(require("../functionalities/playAudio"));
@@ -22,7 +21,7 @@ function loop(msg) {
             return;
         const player = new playAudio_1.default(server);
         server.queuePosition = 0;
-        player.playAudio(msg.channel, server.queue[server.queuePosition].url, server.queue[server.queuePosition].title, server.queue[server.queuePosition].duration);
+        player.playAudio(msg.channel, server.queue[server.queuePosition].url);
     }
 }
-exports.loop = loop;
+exports.default = loop;

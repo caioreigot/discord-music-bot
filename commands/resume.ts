@@ -4,7 +4,7 @@ import Server from '../model/Server';
 import errorMessages from '../errorMessages.json';
 import successMessages from '../successMessages.json'
 
-export function resume(msg: DiscordMessage) {
+export default function resume(msg: DiscordMessage) {
     if (msg.guild == null) {
         msg.channel.send(errorMessages.serverNotIdentified);
         return;

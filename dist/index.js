@@ -43,18 +43,19 @@ const prefix = config_json_1.default.PREFIX;
 const servers = {};
 exports.servers = servers;
 /* Commands */
-const play_1 = require("./commands/play");
-const join_1 = require("./commands/join");
-const leave_1 = require("./commands/leave");
-const pause_1 = require("./commands/pause");
-const resume_1 = require("./commands/resume");
-const queue_1 = require("./commands/queue");
-const clear_1 = require("./commands/clear");
-const remove_1 = require("./commands/remove");
-const next_1 = require("./commands/next");
-const shuffle_1 = require("./commands/shuffle");
-const loop_1 = require("./commands/loop");
-const help_1 = require("./commands/help");
+const play_1 = __importDefault(require("./commands/play"));
+const join_1 = __importDefault(require("./commands/join"));
+const leave_1 = __importDefault(require("./commands/leave"));
+const playlist_1 = __importDefault(require("./commands/playlist"));
+const pause_1 = __importDefault(require("./commands/pause"));
+const resume_1 = __importDefault(require("./commands/resume"));
+const queue_1 = __importDefault(require("./commands/queue"));
+const clear_1 = __importDefault(require("./commands/clear"));
+const remove_1 = __importDefault(require("./commands/remove"));
+const next_1 = __importDefault(require("./commands/next"));
+const shuffle_1 = __importDefault(require("./commands/shuffle"));
+const loop_1 = __importDefault(require("./commands/loop"));
+const help_1 = __importDefault(require("./commands/help"));
 // Função responsável por rodar a aplicação inteira
 const run = () => {
     console.log("Rodando a aplicação...");
@@ -87,67 +88,72 @@ const run = () => {
         }
         /* prefixo + p <url/nome> */
         else if (msg.content.startsWith(prefix + "p ")) {
-            (0, play_1.play)(msg);
+            (0, play_1.default)(msg);
             return;
         }
         /* prefixo + join */
         else if (msg.content === prefix + "join") {
-            (0, join_1.join)(msg);
+            (0, join_1.default)(msg);
             return;
         }
         /* prefixo + help */
         else if (msg.content === prefix + "help") {
-            (0, help_1.help)(msg);
+            (0, help_1.default)(msg);
             return;
         }
-        // Se o servidor não foi carregado
+        /* Se o servidor não foi carregado */
         if (servers[msg.guild.id] == null) {
             msg.channel.send(errorMessages_json_1.default.mustBeConnectedVoiceChannel);
             return;
         }
         /* prefixo + leave */
         else if (msg.content === prefix + "leave") {
-            (0, leave_1.leave)(msg);
+            (0, leave_1.default)(msg);
+            return;
+        }
+        /* prefixo + playlist */
+        else if (msg.content === prefix + "playlist") {
+            (0, playlist_1.default)(msg);
             return;
         }
         /* prefixo + pause */
         else if (msg.content === prefix + "pause") {
-            (0, pause_1.pause)(msg);
+            (0, pause_1.default)(msg);
             return;
         }
         /* prefixo + resume */
         else if (msg.content === prefix + "resume") {
-            (0, resume_1.resume)(msg);
+            (0, resume_1.default)(msg);
             return;
         }
         /* prefixo + queue */
         else if (msg.content === prefix + "queue") {
-            (0, queue_1.queue)(msg);
+            (0, queue_1.default)(msg);
             return;
         }
         /* prefixo + clear */
         else if (msg.content === prefix + "clear") {
-            (0, clear_1.clear)(msg);
+            (0, clear_1.default)(msg);
             return;
         }
         /* prefixo + r <numero> */
         else if (msg.content.startsWith(prefix + "r ")) {
-            (0, remove_1.remove)(msg);
+            (0, remove_1.default)(msg);
             return;
         }
         /* prefixo + next */
         else if (msg.content === prefix + "next") {
-            (0, next_1.next)(msg);
+            (0, next_1.default)(msg);
             return;
         }
         /* prefixo + shuffle */
         else if (msg.content === prefix + "shuffle") {
-            (0, shuffle_1.shuffle)(msg);
+            (0, shuffle_1.default)(msg);
             return;
         }
         /* prefixo + loop */
         else if (msg.content === prefix + "loop") {
-            (0, loop_1.loop)(msg);
+            (0, loop_1.default)(msg);
             return;
         }
         /*
@@ -185,7 +191,7 @@ const assignConnection = (msg) => __awaiter(void 0, void 0, void 0, function* ()
         });
     }
     catch (err) {
-        msg.channel.send(errorMessages_json_1.default.playAudioUnknownError +
+        msg.channel.send(errorMessages_json_1.default.assignConnectionUnknownError +
             "```Log: " + err + "```");
     }
 });
@@ -213,18 +219,8 @@ const loadServers = () => {
     try {
         let data = fs.readFileSync("serverList.json", "utf8");
         const objData = JSON.parse(data);
-        ;
         for (let i = 0; i < objData.servers.length; i++) {
-            servers[objData.servers[i]] = {
-                connection: null,
-                dispatcher: null,
-                currentVideoUrl: null,
-                queue: [],
-                queuePosition: 0,
-                hasNextAudio: false,
-                paused: false,
-                loopEnabled: false
-            };
+            servers[objData.servers[i]] = new Server_1.default();
         }
     }
     catch (err) {

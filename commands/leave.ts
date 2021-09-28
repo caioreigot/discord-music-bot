@@ -2,7 +2,7 @@ import { Message as DiscordMessage } from 'discord.js';
 import { clearServerValues } from '../index';
 import errorMessages from '../errorMessages.json';
 
-export function leave(msg: DiscordMessage) {
+export default function leave(msg: DiscordMessage) {
     if (msg.member?.voice.channel == null) {
         msg.channel.send(errorMessages.voiceChannelNotIdentified);
         return;

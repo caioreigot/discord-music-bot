@@ -4,7 +4,7 @@ import Server from '../model/Server';
 import errorMessages from '../errorMessages.json';
 import successMessages from '../successMessages.json';
 
-export function pause(msg: DiscordMessage) {
+export default function pause(msg: DiscordMessage) {
     if (msg.guild == null) {
         msg.channel.send(errorMessages.serverNotIdentified);
         return;

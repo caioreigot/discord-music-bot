@@ -9,6 +9,7 @@ class Server {
         this.queuePosition = 0;
         this.hasNextAudio = false;
         this.paused = false;
+        this.allowPlaylist = true;
         this.loopEnabled = false;
     }
 }

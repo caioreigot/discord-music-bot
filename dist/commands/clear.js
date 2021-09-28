@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.clear = void 0;
 const index_1 = require("../index");
 const errorMessages_json_1 = __importDefault(require("../errorMessages.json"));
 const successMessages_json_1 = __importDefault(require("../successMessages.json"));
@@ -22,4 +21,4 @@ function clear(msg) {
     server.hasNextAudio = (0, index_1.hasNextAudio)(server);
     msg.channel.send(successMessages_json_1.default.queueCleared);
 }
-exports.clear = clear;
+exports.default = clear;

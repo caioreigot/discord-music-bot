@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -31,53 +12,47 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const index_1 = require("../index");
 const errorMessages_json_1 = __importDefault(require("../errorMessages.json"));
+const successMessages_json_1 = __importDefault(require("../successMessages.json"));
 const ytSearch = require('youtube-search-api');
-const google = __importStar(require("googleapis"));
-const youtube = new google.youtube_v3.Youtube({
-    version: "v3",
-    auth: process.env.GOOGLE_KEY
-});
-function getYoutubeVideoUrl(input, channel, callback) {
+function getYoutubeVideoUrl(input, msg, allowPlaylist = true, callback) {
     return __awaiter(this, void 0, void 0, function* () {
-        /*
-        * API da Google que fornece o ID do vídeo no Youtube, para então
-        * conseguir dar play através da concatenação no URL
-        */
         try {
-            youtube.search.list({
-                q: input,
-                part: ["snippet"],
-                fields: "items(id(videoId), snippet(title,channelTitle))",
-                type: ["video"]
-            }, function (err, resultado) {
-                if (err) {
-                    alternativeSearch(input, channel, callback);
-                    return;
+            if (msg.guild == null) {
+                msg.channel.send(errorMessages_json_1.default.serverNotIdentified);
+                return;
+            }
+            let data = yield ytSearch.GetListByKeyword(input, allowPlaylist);
+            if (data.items.length == 0) {
+                let message = index_1.servers[msg.guild.id].allowPlaylist
+                    ? errorMessages_json_1.default.noResults : errorMessages_json_1.default.noResultsMaybePlaylist;
+                msg.channel.send(message);
+                return;
+            }
+            const firstResult = data.items[0];
+            if (firstResult.type == "video") {
+                callback(`https://www.youtube.com/watch?v=${firstResult.id}`);
+            }
+            else if (firstResult.type == "playlist") {
+                msg.channel.send(successMessages_json_1.default.playlistBeingAdded);
+                let playlistData = yield ytSearch.GetPlaylistData(firstResult.id);
+                for (let i = 0; i < playlistData.items.length; i++) {
+                    if (index_1.servers[msg.guild.id].connection != null) {
+                        // Usando o "await" para esperar antes de ir para próxima iteração
+                        yield callback(`https://www.youtube.com/watch?v=${playlistData.items[i].id}`);
+                    }
+                    else { // Se a "connection" for igual a "null", o bot não está mais no canal de voz
+                        // Parar de adicionar as músicas à queue quebrando o loop
+                        break;
+                    }
                 }
-                else if (resultado) {
-                    let videoId = resultado.data.items[0].id.videoId;
-                    callback(`https://www.youtube.com/watch?v=${videoId}`);
-                }
-            });
+            }
         }
         catch (err) {
-            console.warn(err);
-            alternativeSearch(input, channel, callback);
+            msg.channel.send(errorMessages_json_1.default.playAudioUnknownError +
+                "```" + err + "```");
         }
     });
 }
 exports.default = getYoutubeVideoUrl;
-// Pesquisa no Youtube sem a API da Google
-const alternativeSearch = (input, channel, callback) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        let data = yield ytSearch.GetListByKeyword(input, false);
-        let firstVideoId = data.items[0].id;
-        let link = `https://www.youtube.com/watch?v=${firstVideoId}`;
-        callback(link);
-    }
-    catch (err) {
-        channel.send(errorMessages_json_1.default.playAudioUnknownError +
-            "```" + err + "```");
-    }
-});

@@ -4,7 +4,7 @@ import errorMessages from '../errorMessages.json';
 import successMessage from '../successMessages.json';
 import Server from '../model/Server';
 
-export function remove(msg: DiscordMessage) {
+export default function remove(msg: DiscordMessage) {
     if (msg.guild == null) {
         msg.channel.send(errorMessages.serverNotIdentified);
         return;

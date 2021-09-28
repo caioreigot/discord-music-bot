@@ -25,18 +25,19 @@ export {
 }
 
 /* Commands */
-import { play } from './commands/play';
-import { join } from './commands/join';
-import { leave } from './commands/leave';
-import { pause } from './commands/pause';
-import { resume } from './commands/resume';
-import { queue } from './commands/queue';
-import { clear } from './commands/clear';
-import { remove } from './commands/remove';
-import { next } from './commands/next';
-import { shuffle } from './commands/shuffle';
-import { loop } from './commands/loop';
-import { help } from './commands/help';
+import play from './commands/play';
+import join from './commands/join';
+import leave from './commands/leave';
+import playlist from './commands/playlist';
+import pause from './commands/pause';
+import resume from './commands/resume';
+import queue from './commands/queue';
+import clear from './commands/clear';
+import remove from './commands/remove';
+import next from './commands/next';
+import shuffle from './commands/shuffle';
+import loop from './commands/loop';
+import help from './commands/help';
 
 // Função responsável por rodar a aplicação inteira
 const run = () => {
@@ -92,7 +93,7 @@ const run = () => {
             return;
         }
 
-        // Se o servidor não foi carregado
+        /* Se o servidor não foi carregado */
         if (servers[msg.guild.id] == null) {
             msg.channel.send(errorMessages.mustBeConnectedVoiceChannel);
             return;
@@ -101,6 +102,12 @@ const run = () => {
         /* prefixo + leave */
         else if (msg.content === prefix + "leave") {
             leave(msg);
+            return;
+        }
+
+        /* prefixo + playlist */
+        else if (msg.content === prefix + "playlist") {
+            playlist(msg);
             return;
         }
 
@@ -188,7 +195,7 @@ const assignConnection = async (msg: DiscordMessage) => {
         })
     } catch (err) {
         msg.channel.send(
-            errorMessages.playAudioUnknownError +
+            errorMessages.assignConnectionUnknownError +
             "```Log: "+err+"```"
         )
     }
@@ -219,20 +226,10 @@ const saveServer = async (id: string) => {
 const loadServers = () => {
     try {
         let data: string = fs.readFileSync("serverList.json", "utf8");
-
-        const objData = JSON.parse(data);;
+        const objData = JSON.parse(data);
     
         for (let i = 0; i < objData.servers.length; i++) {
-            servers[objData.servers[i]] = {
-                connection: null,
-                dispatcher: null,
-                currentVideoUrl: null,
-                queue: [],
-                queuePosition: 0,
-                hasNextAudio: false,
-                paused: false,
-                loopEnabled: false
-            };
+            servers[objData.servers[i]] = new Server();
         }
     } catch (err) {
         console.log("loadServers() => Erro ao ler arquivo json: " + err);

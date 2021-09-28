@@ -4,7 +4,7 @@ import errorMessages from '../errorMessages.json';
 import Player from '../functionalities/playAudio';
 import Server from '../model/Server';
 
-export function loop(msg: DiscordMessage) {
+export default function loop(msg: DiscordMessage) {
     if (msg.guild == null) {
         msg.channel.send(errorMessages.serverNotIdentified);
         return;
@@ -26,9 +26,7 @@ export function loop(msg: DiscordMessage) {
         server.queuePosition = 0;
         player.playAudio(
             msg.channel,
-            server.queue[server.queuePosition].url, 
-            server.queue[server.queuePosition].title,
-            server.queue[server.queuePosition].duration
+            server.queue[server.queuePosition].url
         );
     }
 }

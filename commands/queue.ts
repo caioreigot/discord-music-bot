@@ -5,7 +5,7 @@ import errorMessages from '../errorMessages.json';
 import Server from '../model/Server';
 import QueueObject from '../model/QueueObject';
 
-export function queue(msg: DiscordMessage) {
+export default function queue(msg: DiscordMessage) {
     if (msg.guild == null) {
         msg.channel.send(errorMessages.serverNotIdentified);
         return;
