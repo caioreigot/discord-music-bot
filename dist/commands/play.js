@@ -46,8 +46,11 @@ function play(msg) {
         else {
             (0, getYoutubeVideoUrl_1.default)(input, msg, server.allowPlaylist, (url) => new Promise(function (resolve, reject) {
                 return __awaiter(this, void 0, void 0, function* () {
-                    yield player.playRequest(url, msg.channel);
-                    resolve();
+                    let success = yield player.playRequest(url, msg.channel);
+                    if (success)
+                        resolve();
+                    else
+                        reject();
                 });
             }));
         }

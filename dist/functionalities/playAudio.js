@@ -22,23 +22,30 @@ class Player {
     constructor(server) {
         // Função chamada quando um usuário faz uma requisição de áudio, que será adicionado na queue
         this.playRequest = (url, channel) => __awaiter(this, void 0, void 0, function* () {
-            for (let i = 0; i < this.server.queue.length; i++) {
-                // Se esse áudio já foi adicionado na queue
-                if (this.server.queue[i].url == url) {
-                    channel.send(errorMessages_json_1.default.audioAlreadyInQueue);
-                    return;
+            try {
+                for (let i = 0; i < this.server.queue.length; i++) {
+                    // Se esse áudio já foi adicionado na queue
+                    if (this.server.queue[i].url == url) {
+                        channel.send(errorMessages_json_1.default.audioAlreadyInQueue);
+                        return true;
+                    }
                 }
+                // Pegando as informações do vídeo para mostrar o título no chat
+                const info = yield ytdl_core_1.default.getInfo(url);
+                const videoTitle = info.videoDetails.title;
+                const audioDuration = (0, convertToMinutes_1.default)(info.videoDetails.lengthSeconds);
+                this.server.queue.push(new QueueObject_1.default(url, videoTitle, audioDuration));
+                this.server.hasNextAudio = (0, index_js_1.hasNextAudio)(this.server);
+                this.playAudio(channel, url, true);
+                // Mostrar mensagem no chat (status do player)
+                let status = (url == this.server.currentVideoUrl) ? "Tocando" : "Adicionado à fila";
+                channel.send(`${status}: **${videoTitle}** ` + "``[" + audioDuration + "]``");
+                return true;
             }
-            // Pegando as informações do vídeo para mostrar o título no chat
-            const info = yield ytdl_core_1.default.getInfo(url);
-            const videoTitle = info.videoDetails.title;
-            const audioDuration = (0, convertToMinutes_1.default)(info.videoDetails.lengthSeconds);
-            this.server.queue.push(new QueueObject_1.default(url, videoTitle, audioDuration));
-            this.server.hasNextAudio = (0, index_js_1.hasNextAudio)(this.server);
-            this.playAudio(channel, url, true);
-            // Mostrar mensagem no chat (status do player)
-            let status = (url == this.server.currentVideoUrl) ? "Tocando" : "Adicionado à fila";
-            channel.send(`${status}: **${videoTitle}** ` + "``[" + audioDuration + "]``");
+            catch (err) {
+                console.log(err);
+                return false;
+            }
         });
         // Função chamada para tocar, diretamente, um áudio, sem adicioná-lo na queue
         this.playAudio = (channel, url, isUserRequest = false) => {

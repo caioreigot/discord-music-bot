@@ -38,8 +38,10 @@ export default async function play(msg: DiscordMessage) {
     } else {
         getYoutubeVideoUrl(input, msg, server.allowPlaylist, (url: string) => new Promise(
             async function(resolve, reject) {
-                await player.playRequest(url, msg.channel);
-                resolve();
+                let success: boolean = await player.playRequest(url, msg.channel);
+                
+                if (success) resolve();
+                else reject();
             }
         ));
     }

@@ -19,27 +19,33 @@ export default class Player {
     public playRequest = async (
         url: string,
         channel: TextChannel | DMChannel | NewsChannel
-    ) => {
-        for (let i = 0; i < this.server.queue.length; i++) {
-            // Se esse áudio já foi adicionado na queue
-            if (this.server.queue[i].url == url) {
-                channel.send(errorMessages.audioAlreadyInQueue);
-                return;
+    ): Promise<boolean> => {
+        try {
+            for (let i = 0; i < this.server.queue.length; i++) {
+                // Se esse áudio já foi adicionado na queue
+                if (this.server.queue[i].url == url) {
+                    channel.send(errorMessages.audioAlreadyInQueue);
+                    return true;
+                }
             }
+    
+            // Pegando as informações do vídeo para mostrar o título no chat
+            const info = await ytdl.getInfo(url);
+            const videoTitle: string = info.videoDetails.title;
+            const audioDuration: string = convertToMinutes(info.videoDetails.lengthSeconds);
+            
+            this.server.queue.push(new QueueObject(url, videoTitle, audioDuration));
+            this.server.hasNextAudio = hasNextAudio(this.server);
+            this.playAudio(channel, url, true);
+    
+            // Mostrar mensagem no chat (status do player)
+            let status = (url == this.server.currentVideoUrl) ? "Tocando" : "Adicionado à fila"
+            channel.send(`${status}: **${videoTitle}** `+"``["+audioDuration+"]``");
+            return true;
+        } catch (err) {
+            console.log(err);
+            return false;
         }
-
-        // Pegando as informações do vídeo para mostrar o título no chat
-        const info = await ytdl.getInfo(url);
-        const videoTitle: string = info.videoDetails.title;
-        const audioDuration: string = convertToMinutes(info.videoDetails.lengthSeconds);
-        
-        this.server.queue.push(new QueueObject(url, videoTitle, audioDuration));
-        this.server.hasNextAudio = hasNextAudio(this.server);
-        this.playAudio(channel, url, true);
-
-        // Mostrar mensagem no chat (status do player)
-        let status = (url == this.server.currentVideoUrl) ? "Tocando" : "Adicionado à fila"
-        channel.send(`${status}: **${videoTitle}** `+"``["+audioDuration+"]``");
     }
 
     // Função chamada para tocar, diretamente, um áudio, sem adicioná-lo na queue
