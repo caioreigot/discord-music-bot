@@ -19,7 +19,7 @@ export default function queue(msg: DiscordMessage) {
     // Se houver áudios na queue
     if (server.queue.length >= 1) {
         lista = `**Atualmente tocando:** ${server.queue[server.queuePosition].title} `
-        + `**[Posição #${server.queuePosition}]**\n`
+        + `**[Posição #${server.queuePosition + 1}]**\n`
         + `**Loop** ***${(server.loopEnabled ? "ligado." : "desligado.")}***` + "\n\n"
     }
 
